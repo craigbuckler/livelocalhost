@@ -1,0 +1,38 @@
+{
+  "name": "livelocalhost",
+  "version": "1.0.0",
+  "description": "localhost development server with live reloading",
+  "type": "module",
+  "main": "livelocalhost.js",
+  "exports": "./livelocalhost.js",
+  "bin": {
+    "livelocalhost": "./index.js",
+    "llh": "./index.js"
+  },
+  "keywords": [
+    "http",
+    "localhost",
+    "development",
+    "server",
+    "hot",
+    "live",
+    "reload"
+  ],
+  "homepage": "https://github.com/craigbuckler/livelocalhost#readme",
+  "bugs": {
+    "url": "https://github.com/craigbuckler/livelocalhost/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/craigbuckler/livelocalhost.git"
+  },
+  "license": "MIT",
+  "author": "Craig Buckler",
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/craigbuckler"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
