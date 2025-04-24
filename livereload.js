@@ -6,30 +6,31 @@ new EventSource('_reloadSSE_').addEventListener('change', e => {
     d = +new Date();
 
   if (
-    // active page reload
     changed.includes( location.pathname.slice(1) + 'index.html' ) ||
-
-    // hot reload JS
     (_hotloadJS_ && changed.some(c => c.endsWith('.js')))
   ) {
+
+    // full reload on active page or JS change
     location.reload();
-    return;
+
   }
+  else if (changed.some(c => c.endsWith('.css'))) {
 
-  // hot reload CSS
-  Array.from(document.getElementsByTagName('link')).forEach(link => {
+    // hot reload all CSS
+    Array.from(document.getElementsByTagName('link')).forEach(link => {
 
-    const url = new URL(link.href), path = url.pathname;
+      const url = new URL(link.href);
+      if (link.rel === 'stylesheet' && url.host === location.host) {
 
-    if (changed.includes(path.slice(1)) && url.host === location.host) {
+        const css = link.cloneNode();
+        css.onload = () => link.remove();
+        css.href = `${ url.pathname }?${ d }`;
+        link.after(css);
 
-      const css = link.cloneNode();
-      css.onload = () => link.remove();
-      css.href = `${ path }?${ d }`;
-      link.after(css);
+      }
 
-    }
+    });
 
-  });
+  }
 
 });

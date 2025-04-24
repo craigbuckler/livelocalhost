@@ -94,3 +94,15 @@ and start the server:
 ```js
 livelocalhost.start();
 ```
+
+
+## Changes
+
+### 1.0.2
+
+* all CSS files are hot reloaded if one changes to ensure `@import` works.
+* fixed bug that reloaded all `<link>` elements such as sitemaps, feeds, and favicons.
+
+### 1.0.1
+
+* `package.json` fix.
