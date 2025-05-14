@@ -1,6 +1,6 @@
 {
   "name": "livelocalhost",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "localhost development server with live reloading",
   "type": "module",
   "main": "livelocalhost.js",

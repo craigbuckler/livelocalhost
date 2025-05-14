@@ -98,6 +98,10 @@ livelocalhost.start();
 
 ## Changes
 
+### 1.0.3
+
+* now works on Windows (path issue fixed)
+
 ### 1.0.2
 
 * all CSS files are hot reloaded if one changes to ensure `@import` works.

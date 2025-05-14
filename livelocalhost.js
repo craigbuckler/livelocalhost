@@ -1,7 +1,7 @@
 // LiveLocalhost class
 import process from 'node:process';
 import http from 'node:http';
-import { isAbsolute, join, normalize, extname } from 'node:path';
+import { isAbsolute, join, normalize, extname, sep } from 'node:path';
 import { parse } from 'node:url';
 import { access, stat, readFile } from 'fs/promises';
 import { constants as fsConstants } from 'fs';
@@ -55,7 +55,7 @@ class LiveLocalhost {
       const path = parse( req.url )?.pathname;
 
       // no or invalid path
-      if (!path || path !== normalize(path)) {
+      if (!path || path !== normalize(path).replaceAll(sep, '/')) {
         serve(403, 'Forbidden');
         return;
       }
