@@ -1,14 +1,20 @@
 {
   "name": "livelocalhost",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "localhost development server with live reloading",
   "type": "module",
-  "main": "livelocalhost.js",
+  "main": "index.js",
   "exports": "./livelocalhost.js",
   "bin": {
     "livelocalhost": "index.js",
     "llh": "index.js"
   },
+  "files": [
+    "index.js",
+    "livelocalhost.js",
+    "livereload.js",
+    "mimetype.js"
+  ],
   "keywords": [
     "http",
     "localhost",
@@ -34,5 +40,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "concol": "2.0.0"
   }
 }

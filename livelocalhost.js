@@ -6,16 +6,23 @@ import { parse } from 'node:url';
 import { access, stat, readFile } from 'fs/promises';
 import { constants as fsConstants } from 'fs';
 import { watch } from 'node:fs';
+import { styleText } from 'node:util';
+
+import { ConCol } from 'concol';
+
 import { mimeType } from './mimetype.js';
+
+export const concol = new ConCol('LiveLocalhost', 'green');
 
 class LiveLocalhost {
 
   // defaults
-  servedir = './';
-  serveport = 8000;
-  reloadservice = '/livelocalhost.service';
-  hotloadJS = false;
-  watchDebounce = 600;
+  serveport = parseFloat(process.env.SERVE_PORT  || 8000);
+  servedir = process.env.BUILD_DIR || './';
+  reloadservice = process.env.RELOAD_SERVICE || '/livelocalhost.service';
+  hotloadJS = (process.env.HOTLOAD_JS?.toLowerCase() === 'true');
+  watchDebounce = parseFloat(process.env.WATCH_DEBOUNCE  || 600);
+  accessLog = (process.env.ACCESS_LOG?.toLowerCase() === 'true');
 
   // server directory
   #serverDir = null;
@@ -57,6 +64,7 @@ class LiveLocalhost {
       // no or invalid path
       if (!path || path !== normalize(path).replaceAll(sep, '/')) {
         serve(403, 'Forbidden');
+        if (this.accessLog) concol.error(styleText('redBright', `403 ${ path }`));
         return;
       }
 
@@ -84,6 +92,7 @@ class LiveLocalhost {
       // live reload script
       if (reloadJS && path === reloadJS) {
         serve(200, reloadJScode, '.js');
+        if (this.accessLog) concol.log(`200 ${ path }`);
         return;
       }
 
@@ -101,6 +110,7 @@ class LiveLocalhost {
       // file not available?
       if (!fInfo.exists || !fInfo.canRead) {
         serve(404, 'Not Found');
+        if (this.accessLog) concol.log(styleText('redBright', `404 ${ path }`));
         return;
       }
 
@@ -131,11 +141,12 @@ class LiveLocalhost {
 
         // serve cached file
         serve(200, this.#bufMap.get(filename), ext);
+        if (this.accessLog) concol.log(`200 ${ path }`);
 
       }
       catch (e) {
-        console.error(e);
         serve(500, 'Internal Server Error');
+        if (this.accessLog) concol.error(styleText('redBright', `500 ${ path }\n${ e }`));
       }
 
       // serve content
@@ -159,17 +170,29 @@ class LiveLocalhost {
     }
 
     // server started
-    console.log(`[livelocalhost] development server started: http://localhost:${ this.serveport }/`);
-    console.log(`                using files in directory  : ${ this.#serverDir }`);
+    const status = [
+      [ 'development server started', ` http://localhost:${ this.serveport }` ],
+      [ 'using files in directory', ' ' + this.#serverDir ],
+    ];
 
     if (reloadSSE) {
-      console.log(`                live reload service       : ${ reloadSSE }`);
-      console.log(`                live reload script        : ${ reloadJS }`);
-      console.log(`                live reload JavaScript    : ${ this.hotloadJS ? 'enabled' : 'disabled' }`);
+      status.push(
+        [ 'live reload service', ' ' + reloadSSE ],
+        [ 'live reload script', ' ' + reloadJS ],
+        [ 'live reload JavaScript', (this.hotloadJS ? ' enabled' : ' disabled') + '   ' ],
+      );
     }
     else {
-      console.log('                live reload service       : not active');
+      status.push(
+        [ 'live reload service', ' not active' ]
+      );
     }
+
+    status.push(
+      [ 'access logs', (this.accessLog ? ' enabled' : ' disabled') + '   ' ]
+    );
+
+    concol.log( status );
 
   }
 
@@ -205,6 +228,8 @@ class LiveLocalhost {
       this.#resSet.forEach(res => {
         res.write(`event: change\ndata: ${ JSON.stringify(cFiles) }\n\n`);
       });
+
+      if (this.accessLog) concol.log(styleText('yellow', `SSE file change (${ cFiles.length })`));
 
     }
 

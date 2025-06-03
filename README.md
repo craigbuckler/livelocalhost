@@ -5,13 +5,19 @@ A simple localhost development server with hot reloading. Serves any local direc
 
 ## Command line usage
 
-To use LiveLocalhost from the command line, install it globally:
+Run LiveLocalhost from the command line:
+
+```bash
+npx livelocalhost
+```
+
+You can also install it globally:
 
 ```bash
 npm install livelocalhost -g
 ```
 
-To serve static files from the current directory on HTTP port 8000:
+and serve static files using:
 
 ```bash
 llh
@@ -23,23 +29,26 @@ or
 livelocalhost
 ```
 
-and access http://localhost:8000/ in your browser.
+Once started, you can access http://localhost:8000/ in your browser.
 
 
 ### Options
 
-Options can be defined with a single dash (`-`), double dash (`--`), in `-name=value`, or `-name value` format.
+Options can can be set with `--name=value`, or `--name value` format.
 
 |parameter|description|
 |-|-|
-|`--port`, `--serveport <port>`| HTTP port (default `8000`) |
-|`--dir`,  `--servedir <dir>`  | directory to serve (default `./`) |
-|`--reloadservice <path>`      | path to reload service (default `/livelocalhost.service`) |
-|`--hotloadJS`                 | enable hot reloading of JavaScript files (default `false`) |
-|`--watchDebounce <ms>`        | debounce time for file changes (default `600`) |
-|`--v`, `--version`            | show version information |
-|`--?`, `--help`               | show help |
-
+| `-e`, `--env <file>` |load defaults from an .env file|
+| `-p`, `--serveport <port>` | HTTP port (default `8000`) |
+| `-d`, `--servedir <dir>` | directory to serve (`./`) |
+| `-r`, `--reloadservice <path>` | path to reload service (`/livelocalhost.service`) |
+| `-j`, `--hotloadJS` | enable hot reloading of JavaScript files (`false`) |
+| `-w`, `--watchDebounce <ms>` | debounce time for file changes (default `600`) |
+| `-l`, `--accessLog` | show server access log (`false`) |
+| `-v`, `--version` | show application version |
+| `-?`, `--help` | show CLI help |
+| `-E`, `--helpenv` | show .env/environment variable help |
+| `-A`, `--helpapi` | show Node.js API help |
 
 The `reloadservice` need only be changed if you want to disable or change the Server Sent Events handler path. By default, the path is `/livelocalhost.service`. A client-side script at `/livelocalhost.service.js` is injected into HTML files to trigger reloading.
 
@@ -50,22 +59,25 @@ Hot reloading of client-side JavaScript is disabled unless you enable `--hotload
 Examples:
 
 ```bash
-llh -port 8080 --dir=./build/ -reloadservice /reload
-llh --port=8080 -dir ./build/ --reloadservice=/reload
+llh --serveport 8080 --servedir=./build/ --reloadservice /reload
 ```
 
 The first two non-dashed parameters are presumed to be the port and directory:
 
 ```bash
-llh 8080 ./build/ --reloadservice=0
+llh 8080 ./build/
 ```
+
+You can also use environment variables to configure options - enter `llh -E` for details.
 
 Stop the server with `Ctrl` | `Cmd` + `C`.
 
 
 ## Node.js module usage
 
-Install `livelocalhost` in your Node.js project:
+You can use `livelocalhost` in your Node.js projects - enter `llh -A` for details.
+
+Install it into your project:
 
 ```bash
 npm install livelocalhost
@@ -73,13 +85,13 @@ npm install livelocalhost
 
 Optionally add `--save-dev` to ensure it's only loaded in development mode.
 
-Import the module:
+Import the module into a JavaScript file (such as `index.js`):
 
 ```js
 import { livelocalhost } from 'livelocalhost';
 ```
 
-set [options](#options) as necessary, e.g.
+set options as necessary, e.g.
 
 ```js
 livelocalhost.serveport = 8080;
@@ -87,26 +99,36 @@ livelocalhost.servedir = './build/';
 livelocalhost.reloadservice = '/reload';
 livelocalhost.hotloadJS = true;
 livelocalhost.watchDebounce = 2000;
+livelocalhost.accessLog = true;
 ```
 
-and start the server:
+*(If not explicitly set, the options fall back to environment variables and defaults.)*
+
+Execute the `.start()` method:
 
 ```js
 livelocalhost.start();
 ```
 
+Launch your application as normal, e.g. `node index.js`.
+
 
 ## Changes
 
-### 1.0.3
+### 1.1.0, 3 June 2025
+
+* new `accessLog` option
+* improved CLI argument parsing, logging, help, and README
+
+### 1.0.3, 14 May 2025
 
 * now works on Windows (path issue fixed)
 
-### 1.0.2
+### 1.0.2, 23 April 2025
 
 * all CSS files are hot reloaded if one changes to ensure `@import` works.
 * fixed bug that reloaded all `<link>` elements such as sitemaps, feeds, and favicons.
 
-### 1.0.1
+### 1.0.1, 23 April 2025
 
 * `package.json` fix.
