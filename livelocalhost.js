@@ -171,25 +171,25 @@ class LiveLocalhost {
 
     // server started
     const status = [
-      [ 'development server started', ` http://localhost:${ this.serveport }` ],
-      [ 'using files in directory', ' ' + this.#serverDir ],
+      [ 'development server started', `http://localhost:${ this.serveport }` ],
+      [ 'using files in directory', this.#serverDir ],
     ];
 
     if (reloadSSE) {
       status.push(
-        [ 'live reload service', ' ' + reloadSSE ],
-        [ 'live reload script', ' ' + reloadJS ],
-        [ 'live reload JavaScript', (this.hotloadJS ? ' enabled' : ' disabled') + '   ' ],
+        [ 'live reload service', reloadSSE ],
+        [ 'live reload script', reloadJS ],
+        [ 'live reload JavaScript', (this.hotloadJS ? 'enabled' : 'disabled') ],
       );
     }
     else {
       status.push(
-        [ 'live reload service', ' not active' ]
+        [ 'live reload service', 'not active' ]
       );
     }
 
     status.push(
-      [ 'access logs', (this.accessLog ? ' enabled' : ' disabled') + '   ' ]
+      [ 'access logs', (this.accessLog ? 'enabled' : 'disabled') ]
     );
 
     concol.log( status );
