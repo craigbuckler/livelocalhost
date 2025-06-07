@@ -17,9 +17,9 @@ export const concol = new ConCol('LiveLocalhost', 'green');
 class LiveLocalhost {
 
   // defaults
-  serveport = parseFloat(process.env.SERVE_PORT  || 8000);
+  serveport = parseFloat(process.env.SERVE_PORT || 8000);
   servedir = process.env.BUILD_DIR || './';
-  reloadservice = process.env.RELOAD_SERVICE || '/livelocalhost.service';
+  reloadservice = process.env.RELOAD_SERVICE ?? '/livelocalhost.service';
   hotloadJS = (process.env.HOTLOAD_JS?.toLowerCase() === 'true');
   watchDebounce = parseFloat(process.env.WATCH_DEBOUNCE  || 600);
   accessLog = (process.env.ACCESS_LOG?.toLowerCase() === 'true');
@@ -38,17 +38,34 @@ class LiveLocalhost {
     // server directory
     this.#serverDir = isAbsolute(this.servedir) ? join(this.servedir) : join(process.cwd(), this.servedir);
 
-    const
-      serverDirInfo = await fileInfo(this.#serverDir),
-      reloadSSE = this.reloadservice,
-      reloadJS = reloadSSE ? reloadSSE + '.js' : null;
+    const serverDirInfo = await fileInfo(this.#serverDir);
 
     // server directory does not exist?
     if (!serverDirInfo.exists) {
-      throw new Error(`server directory does not exist: ${ this.#serverDir }`);
+      concol.error(`server directory does not exist: ${ this.#serverDir }`);
+      return;
     }
 
-    // load JavaScript file
+    const rs = String(this.reloadservice || '').trim();
+    let
+      reloadSSE = rs.length > 1 && rs.startsWith('/') && rs,
+      reloadJS = reloadSSE ? reloadSSE + '.js' : false;
+
+    // start file watcher
+    if (reloadSSE) {
+
+      try {
+        this.#watcher();
+      }
+      catch(e) {
+        concol.error(['File watching failed - live reload disabled', e]);
+        reloadSSE = false;
+        reloadJS = false;
+      }
+
+    }
+
+    // load client-side reload JavaScript
     const reloadJScode = reloadJS ?
       (await readFile(join(import.meta.dirname, 'livereload.js'), { encoding: 'utf8' }))
         .replace('_reloadSSE_', reloadSSE)
@@ -128,7 +145,7 @@ class LiveLocalhost {
           let content = await readFile(filename);
 
           // add livereload script to HTML files
-          if (ext.includes('htm')) {
+          if (reloadSSE && ext.includes('htm')) {
             content = content
               .toString()
               .replace('</head>', `<script type="module" src="${ reloadJS }"></script>\n</head>`);
@@ -164,10 +181,6 @@ class LiveLocalhost {
 
     }).listen( this.serveport );
 
-    // start file watcher
-    if (reloadSSE) {
-      this.#watcher();
-    }
 
     // server started
     const status = [
@@ -184,7 +197,7 @@ class LiveLocalhost {
     }
     else {
       status.push(
-        [ 'live reload service', 'not active' ]
+        [ 'live reload service', 'disabled' ]
       );
     }
 

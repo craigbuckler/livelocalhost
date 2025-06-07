@@ -1,5 +1,7 @@
 # LiveLocalhost
 
+[**GitHub**](https://github.com/craigbuckler/livelocalhost) | [**npm**](https://www.npmjs.com/package/livelocalhost) | [**sponsor**](https://github.com/sponsors/craigbuckler) | [BlueSky](https://bsky.app/profile/craigbuckler.com) | [craigbuckler.com](https://craigbuckler.com/)
+
 A simple localhost development server with hot reloading. Serves any local directory, watches for file changes, and triggers live browser reloading.
 
 
@@ -50,7 +52,15 @@ Options can can be set with `--name=value`, or `--name value` format.
 | `-E`, `--helpenv` | show .env/environment variable help |
 | `-A`, `--helpapi` | show Node.js API help |
 
-The `reloadservice` need only be changed if you want to disable or change the Server Sent Events handler path. By default, the path is `/livelocalhost.service`. A client-side script at `/livelocalhost.service.js` is injected into HTML files to trigger reloading.
+Browser live reloading is available when:
+
+  1. the application has permission to watch files, and
+  2. `--reloadservice` is a URL path starting `/`
+
+By default, the Server Sent Events service path for live reloading is `/livelocalhost.service` and a client-side script at `/livelocalhost.service.js` is injected into all HTML files. You need only change `--reloadservice` if that path is already in use or you want to disable live reloading.
+
+
+Live reloading is disabled when you set any value that does not start with `/`.
 
 Hot reloading of client-side JavaScript is disabled unless you enable `--hotloadJS`. This refreshes the whole page when any JavaScript file changes.
 
@@ -115,10 +125,21 @@ Launch your application as normal, e.g. `node index.js`.
 
 ## Changes
 
+### 1.2.0, 7 June 2025
+
+* disable live reloading when `--reloadservice` does not start with `/`
+* disable live reloading when the app does not have permission to watch files
+* help and README updates
+
+### 1.1.1, 5 June 2025
+
+* minor logging updates
+
 ### 1.1.0, 3 June 2025
 
 * new `accessLog` option
-* improved CLI argument parsing, logging, help, and README
+* uses [ConCol](https://www.npmjs.com/package/concol) for prettier console logging
+* improved CLI argument parsing, help, and README
 
 ### 1.0.3, 14 May 2025
 

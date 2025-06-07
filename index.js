@@ -20,7 +20,7 @@ const
     { env: null,              cli: 'helpenv',       clis: 'E',  prop: null,             type: null,         default: null,                      help: 'show .env/environment variable help' },
     { env: null,              cli: 'helpapi',       clis: 'A',  prop: null,             type: null,         default: null,                      help: 'show Node.js API help' },
   ],
-  helpLink = styleText('cyanBright', 'For help, refer to https://github.com/craigbuckler/livelocalhost');
+  helpLink = styleText('cyanBright', 'For help, refer to https://www.npmjs.com/package/livelocalhost');
 
 // default options
 let opt = { help: true };
@@ -85,16 +85,20 @@ ${
     .join('\n')
 }
 
-Options can use "--name value" or "--name=value" format.
+Browser live reloading is only available when:
+
+  1. the application has permission to watch files, and
+  2. --reloadservice is a URL path starting /
 
 Example:
 
-  llh --serveport 8080 --servedir=./build/ --reloadservice /reload
+  llh --serveport 8080 -d ./build/ --reloadservice /reload
 
 The first two non-dashed parameters are presumed to be the port and directory:
 
   llh 8080 ./build/
 
+Stop the server with ${ styleText('dim', 'Ctrl|Cmd + C') }
 `);
 }
 
