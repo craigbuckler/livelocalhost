@@ -1,17 +1,19 @@
 # LiveLocalhost
 
-[**GitHub**](https://github.com/craigbuckler/livelocalhost) | [**npm**](https://www.npmjs.com/package/livelocalhost) | [**sponsor**](https://github.com/sponsors/craigbuckler) | [BlueSky](https://bsky.app/profile/craigbuckler.com) | [craigbuckler.com](https://craigbuckler.com/)
+[**GitHub**](https://github.com/craigbuckler/livelocalhost) | [**npm**](https://www.npmjs.com/package/livelocalhost) | [**sponsor**](https://github.com/sponsors/craigbuckler) | [craigbuckler.com](https://craigbuckler.com/) | [BlueSky](https://bsky.app/profile/craigbuckler.com) | [X](https://x.com/craigbuckler)
 
-A simple localhost development server with hot reloading. Serves any local directory, watches for file changes, and triggers live browser reloading.
+A simple localhost development web server with hot reloading. It serves web files from any local directory, watches for file changes, and triggers automated browser refreshes. You can run it from the command line or in a Node.js application.
 
 
-## Command line usage
+## Quick start
 
-Run LiveLocalhost from the command line:
+Run LiveLocalhost from the command line to serve files from the current directory:
 
 ```bash
 npx livelocalhost
 ```
+
+then open http://localhost:8000/ in your browser.
 
 You can also install it globally:
 
@@ -19,83 +21,102 @@ You can also install it globally:
 npm install livelocalhost -g
 ```
 
-and serve static files using:
-
-```bash
-llh
-```
-
-or
+and run using:
 
 ```bash
 livelocalhost
 ```
 
-Once started, you can access http://localhost:8000/ in your browser.
+or
+
+```bash
+llh
+```
+
+To use a different port and directory:
+
+```bash
+llh -p 8888 -d ./path/
+```
 
 
-### Options
+## Command line configuration
 
-Options can can be set with `--name=value`, or `--name value` format.
+Add `-?` or `--help` for CLI help. Options:
 
 |parameter|description|
 |-|-|
-| `-e`, `--env <file>` |load defaults from an .env file|
-| `-p`, `--serveport <port>` | HTTP port (default `8000`) |
-| `-d`, `--servedir <dir>` | directory to serve (`./`) |
-| `-r`, `--reloadservice <path>` | path to reload service (`/livelocalhost.service`) |
-| `-j`, `--hotloadJS` | enable hot reloading of JavaScript files (`false`) |
-| `-w`, `--watchDebounce <ms>` | debounce time for file changes (default `600`) |
-| `-l`, `--accessLog` | show server access log (`false`) |
 | `-v`, `--version` | show application version |
 | `-?`, `--help` | show CLI help |
 | `-E`, `--helpenv` | show .env/environment variable help |
 | `-A`, `--helpapi` | show Node.js API help |
+| `-e`, `--env <file>` |load defaults from an .env file|
+| `-p`, `--serveport <port>` | HTTP port (default `8000`) |
+| `-d`, `--servedir <dir>` | directory to serve (`./`) |
+| `-r`, `--reloadservice <path>` | path to [reload service](#hot-reloading) (`/livelocalhost.service`) |
+| `-j`, `--hotloadJS` | enable hot reloading of JavaScript files (`false`) |
+| `-w`, `--watchDebounce <ms>` | [debounce time](#watch-debouncing) for file changes (default `600`) |
+| `-l`, `--accessLog` | show server access log (`false`) |
 
-Browser live reloading is available when:
-
-  1. the application has permission to watch files, and
-  2. `--reloadservice` is a URL path starting `/`
-
-By default, the Server Sent Events service path for live reloading is `/livelocalhost.service` and a client-side script at `/livelocalhost.service.js` is injected into all HTML files. You need only change `--reloadservice` if that path is already in use or you want to disable live reloading.
-
-
-Live reloading is disabled when you set any value that does not start with `/`.
-
-Hot reloading of client-side JavaScript is disabled unless you enable `--hotloadJS`. This refreshes the whole page when any JavaScript file changes.
-
-`--watchDebounce` sets a delay time to ensures multiple file changes do not trigger more than one live reload.
-
-Examples:
+Serve files from `./build/` at `http://localhost:8080` and show the access log:
 
 ```bash
-llh --serveport 8080 --servedir=./build/ --reloadservice /reload
+llh --serveport 8080 -d ./build/ -l
 ```
 
 The first two non-dashed parameters are presumed to be the port and directory:
 
 ```bash
-llh 8080 ./build/
+llh 8080 ./build/ -l
 ```
-
-You can also use environment variables to configure options - enter `llh -E` for details.
 
 Stop the server with `Ctrl` | `Cmd` + `C`.
 
 
-## Node.js module usage
+## Environment variable configuration
 
-You can use `livelocalhost` in your Node.js projects - enter `llh -A` for details.
+The server can be configured with environment variables. Add `-E` or `--helpenv` for help. Variables:
 
-Install it into your project:
+|env variable|description|
+|-|-|
+| `SERVE_PORT=<port>` | HTTP port (default `8000`) |
+| `BUILD_DIR=<dir>` | directory to serve (`./`) |
+| `RELOAD_SERVICE=<path>` | path to [reload service](#hot-reloading) (`/livelocalhost.service`) |
+| `HOTLOAD_JS=<true\|false>` | enable hot reloading of JavaScript files (`false`) |
+| `WATCH_DEBOUNCE=<num>` | [debounce time](#watch-debouncing) for file changes (default `600`) |
+| `ACCESS_LOG=<true\|false>` | show server access log (`false`) |
 
-```bash
-npm install livelocalhost
+Variables can be defined in a file, e.g.
+
+```ini
+# example .env file
+SERVE_PORT=8080
+BUILD_DIR=./build/
+ACCESS_LOG=true
 ```
 
-Optionally add `--save-dev` to ensure it's only loaded in development mode.
+then loaded:
 
-Import the module into a JavaScript file (such as `index.js`):
+```bash
+llh --env .env
+```
+
+Note that CLI arguments take precedence over environment variables.
+
+
+## Node.js API usage
+
+You can use LiveLocalhost in any Node.js project. Add `-A`  or `--helpapi` for help.
+
+Install in your project:
+
+```bash
+npm install livelocalhost --save-dev
+```
+
+*(`--save-dev` ensures it's only available in development)*
+
+Import the module into any JavaScript file (such as `index.js`):
 
 ```js
 import { livelocalhost } from 'livelocalhost';
@@ -104,52 +125,43 @@ import { livelocalhost } from 'livelocalhost';
 set options as necessary, e.g.
 
 ```js
-livelocalhost.serveport = 8080;
-livelocalhost.servedir = './build/';
-livelocalhost.reloadservice = '/reload';
-livelocalhost.hotloadJS = true;
-livelocalhost.watchDebounce = 2000;
-livelocalhost.accessLog = true;
+livelocalhost.serveport     = 8080;       // HTTP port
+livelocalhost.servedir      = './build/'; // directory to serve
+livelocalhost.reloadservice = '/reload';  // path to reload service
+livelocalhost.hotloadJS     = true;       // hot reload JS
+livelocalhost.watchDebounce = 2000;       // debounce time
+livelocalhost.accessLog     = true;       // show server logs
 ```
 
-*(If not explicitly set, the options fall back to environment variables and defaults.)*
+*(If not set, options fall back to environment variables then defaults.)*
 
-Execute the `.start()` method:
+Execute the `.start()` method to start the server:
 
 ```js
 livelocalhost.start();
 ```
 
-Launch your application as normal, e.g. `node index.js`.
+Launch your application as normal (`node index.js`) and open the server URL in your browser.
 
 
-## Changes
+## Hot reloading
 
-### 1.2.0, 7 June 2025
+Browser hot reloading is available when:
 
-* disable live reloading when `--reloadservice` does not start with `/`
-* disable live reloading when the app does not have permission to watch files
-* help and README updates
+  1. the application has permission to watch OS files, and
+  2. `--reloadservice` is a valid URL path starting `/`.
 
-### 1.1.1, 5 June 2025
+The default Server Sent Events service path for hot reloading is `/livelocalhost.service`. A client-side script at `/livelocalhost.service.js` is injected into all HTML files which automatically refreshes the browser:
 
-* minor logging updates
+* CSS changes are hot reloaded without a full page refresh
+* HTML changes trigger a full page refresh
+* JavaScript changes trigger a full page refresh when `--hotloadJS` is enabled (off by default).
 
-### 1.1.0, 3 June 2025
+You need only change `--reloadservice` when the default path is in use or you want to disable hot reloading (set any value that does not start with `/`).
 
-* new `accessLog` option
-* uses [ConCol](https://www.npmjs.com/package/concol) for prettier console logging
-* improved CLI argument parsing, help, and README
 
-### 1.0.3, 14 May 2025
+## Watch debouncing
 
-* now works on Windows (path issue fixed)
+When a file is changed, LiveLocalhost waits 600ms. A hot reload is only triggered if no other files change within that time.
 
-### 1.0.2, 23 April 2025
-
-* all CSS files are hot reloaded if one changes to ensure `@import` works.
-* fixed bug that reloaded all `<link>` elements such as sitemaps, feeds, and favicons.
-
-### 1.0.1, 23 April 2025
-
-* `package.json` fix.
+You can change the delay time using `--watchDebounce`. Note that very low settings can make reloading slower.

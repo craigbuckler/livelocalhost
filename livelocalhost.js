@@ -184,6 +184,7 @@ class LiveLocalhost {
 
     // server started
     const status = [
+      '─'.repeat(50),
       [ 'development server started', `http://localhost:${ this.serveport }` ],
       [ 'using files in directory', this.#serverDir ],
     ];
@@ -202,7 +203,8 @@ class LiveLocalhost {
     }
 
     status.push(
-      [ 'access logs', (this.accessLog ? 'enabled' : 'disabled') ]
+      [ 'access logs', (this.accessLog ? 'enabled' : 'disabled') ],
+      '─'.repeat(50),
     );
 
     concol.log( status );

@@ -68,35 +68,32 @@ if (opt.version) {
 if (opt.help) {
 
   console.log(`
-${ styleText(['yellowBright'], 'LiveLocalhost CLI help') }
-
-Starts a development server in a local directory with live reload support.
+${ styleText('yellowBright', 'LiveLocalhost CLI help') }
+Start a development web server from a local directory with hot reloading.
 ${ helpLink }
 
-CLI usage: ${ styleText(['whiteBright'], 'livelocalhost') + styleText(['dim'], ' [options]') }
-           ${ styleText(['whiteBright'], 'llh') + styleText(['dim'], ' [options]') }
+no install: ${ styleText('whiteBright', 'npx livelocalhost') + styleText('dim', ' [options]') }
+
+or install: ${ styleText('whiteBright', 'npm install livelocalhost -g') }
+  then run: ${ styleText('whiteBright', 'livelocalhost') + styleText('dim', ' [options]') }
+        or: ${ styleText('whiteBright', 'llh') + styleText('dim', ' [options]') }
 
 Options:
 
 ${
   config
     .filter(c => c.cli)
-    .map(c => `  ${ (c.clis ? `-${ c.clis }, ` : '    ') }--${ c.cli.padEnd(14) }${ styleText(['dim'], (c.type ? ' <' + c.type + '>' : '').padEnd(13)) } ${ c.help } ${ c.default ? styleText(['dim'], `(${ c.default })`) : '' }`)
+    .map(c => `  ${ (c.clis ? `-${ c.clis }, ` : '    ') }--${ c.cli.padEnd(14) }${ styleText('dim', (c.type ? ' <' + c.type + '>' : '').padEnd(13)) } ${ c.help } ${ c.default !== null ? styleText('dim', `(${ c.default })`) : '' }`)
     .join('\n')
 }
 
-Browser live reloading is only available when:
+Serve files from ./build/ at http://localhost:8080 and show the access log:
 
-  1. the application has permission to watch files, and
-  2. --reloadservice is a URL path starting /
-
-Example:
-
-  llh --serveport 8080 -d ./build/ --reloadservice /reload
+  ${ styleText('whiteBright', 'llh') + styleText('dim', ' --serveport 8080 -d ./build/ -l') }
 
 The first two non-dashed parameters are presumed to be the port and directory:
 
-  llh 8080 ./build/
+  ${ styleText('whiteBright', 'llh') + styleText('dim', ' 8080 ./build/ -l') }
 
 Stop the server with ${ styleText('dim', 'Ctrl|Cmd + C') }
 `);
@@ -107,27 +104,27 @@ Stop the server with ${ styleText('dim', 'Ctrl|Cmd + C') }
 if (opt.helpenv) {
 
   console.log(`
-${ styleText(['yellowBright'], 'LiveLocalhost environment variable help') }
-
-LiveLocalhost options can be set using environment variables.
-Variables can also be defined in a file and loaded with ${ styleText(['dim'], '--env <file>') }
+${ styleText('yellowBright', 'LiveLocalhost environment variable help') }
+The server can be configured with environment variables.
 
 Variables:
 
 ${ config
     .filter(c => c.env)
-    .map(c => `  ${ c.env }${ styleText(['dim'], (c.type ? '=<' + c.type + '>' : '').padEnd(33 - c.env.length)) } ${ c.help } ${ c.default ? styleText(['dim'], `(${ c.default })`) : '' }`)
+    .map(c => `  ${ c.env }${ styleText('dim', (c.type ? '=<' + c.type + '>' : '').padEnd(33 - c.env.length)) } ${ c.help } ${ c.default !== null ? styleText('dim', `(${ c.default })`) : '' }`)
     .join('\n')
 }
-${ styleText(['green'], `
-# Example .env file
-SERVE_PORT=8080
-BUILD_DIR=./dest/
-RELOAD_SERVICE=./reload
-`) }
-Load using:
 
-  ${ styleText(['whiteBright'], 'livelocalhost') + styleText(['dim'], ' --env .env') }
+Variables can be defined in a file, e.g.
+${ styleText('green', `
+  # example .env file
+  SERVE_PORT=8080
+  BUILD_DIR=./build/
+  ACCESS_LOG=true
+`) }
+then loaded:
+
+  ${ styleText('whiteBright', 'llh') + styleText('dim', ' --env .env') }
 
 Note that CLI arguments take precedence over environment variables.
 
@@ -140,41 +137,41 @@ ${ helpLink }
 if (opt.helpapi) {
 
   console.log(`
-${ styleText(['yellowBright'], 'LiveLocalhost Node.js API help') }
+${ styleText('yellowBright', 'LiveLocalhost Node.js API help') }
+You can use LiveLocalhost in any Node.js project.
 
-You can use the Node.js API to programmatically launch a server.
+Install in your project:
 
-Install the module into a Node.js project:
+  ${ styleText('whiteBright', 'npm install livelocalhost --save-dev') }
 
-  ${ styleText(['whiteBright'], 'npm install livelocalhost') }
+${ styleText(['dim','italic'], '(--save-dev ensures it\'s only available in development)') }
 
-Create a JavaScript file (such as index.js):
-${ styleText(['green'], `
+Import the module into any JavaScript file (such as index.js):
+${ styleText('green', `
   // EXAMPLE CODE
   import { livelocalhost } from 'livelocalhost';
 
   // configuration
   livelocalhost.serveport = 8080;
-  livelocalhost.servedir = './build/index/';
-  livelocalhost.reloadservice = './reload';
+  livelocalhost.servedir  = './build/';
+  livelocalhost.accessLog = true;
 
   // run server
   livelocalhost.start();
 `) }
 Then run it:
 
-  ${ styleText(['whiteBright'], 'node index.js') }
+  ${ styleText('whiteBright', 'node index.js') }
 
-livelocalhost object configuration properties:
+${ styleText('green', 'livelocalhost') } object configuration properties:
 
 ${ config
     .filter(c => c.prop)
-    .map(c => `  ${ styleText(['green'], '.' + c.prop) }${ styleText(['dim'], (c.type ? ' = <' + c.type + '>;' : '').padEnd(35 - c.prop.length)) } ${ c.help } ${ c.default ? styleText(['dim'], `(${ c.type != 'num' && c.type != 'true|false' ? '\'' : ''}${ c.default }${ c.type != 'num' && c.type != 'true|false' ? '\'' : ''})`) : '' }`)
+    .map(c => `  ${ styleText('green', '.' + c.prop.padEnd(13, ' ')) }${ styleText('dim', (c.type ? ' = <' + c.type + '>;' : '').padEnd(17)) } ${ styleText(['green','dim'], '// ' + c.help) } ${ c.default !== null ? styleText('dim', `(${ c.type === 'path' ? '\'' : ''}${ c.default }${ c.type === 'path' ? '\'' : ''})`) : '' }`)
     .join('\n')
 }
 
-When a value is not defined, livelocalhost falls back to an
-environment variable then the default value ${ styleText(['dim'], '(shown in brackets)') }.
+${ styleText(['dim','italic'], '(If not set, options fall back to environment variables then defaults.)') }
 
 ${ helpLink }
 `);
