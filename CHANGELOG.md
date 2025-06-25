@@ -1,5 +1,9 @@
 # Changelog
 
+### [1.2.2, 25 June 2025](#122-25-june-2025)
+
+* [ConCol](https://www.npmjs.com/package/concol) update
+
 ### [1.2.1, 9 June 2025](#121-9-june-2025)
 
 * help updates and fixes

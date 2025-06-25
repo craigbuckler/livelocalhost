@@ -1,6 +1,6 @@
 {
   "name": "livelocalhost",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "localhost development server with live reloading",
   "type": "module",
   "main": "index.js",
@@ -42,6 +42,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "concol": "2.1.0"
+    "concol": "2.1.1"
   }
 }
