@@ -2,7 +2,7 @@
 
 [**GitHub**](https://github.com/craigbuckler/livelocalhost) | [**npm**](https://www.npmjs.com/package/livelocalhost) | [**sponsor**](https://github.com/sponsors/craigbuckler) | [craigbuckler.com](https://craigbuckler.com/) | [BlueSky](https://bsky.app/profile/craigbuckler.com) | [X](https://x.com/craigbuckler)
 
-A simple localhost development web server with hot reloading. It serves web files from any local directory, watches for file changes, and triggers automated browser refreshes. You can run it from the command line or in a Node.js application.
+A simple localhost development web server with hot reloading. It serves web files from any local directory, watches for file changes, and triggers automated browser refreshes. You can run it from the command line or within a Node.js application.
 
 
 ## Quick start
@@ -13,7 +13,7 @@ Run LiveLocalhost from the command line to serve files from the current director
 npx livelocalhost
 ```
 
-then open http://localhost:8000/ in your browser.
+then open [localhost:8000](http://localhost:8000/) in your browser.
 
 You can also install it globally:
 
@@ -64,7 +64,7 @@ Serve files from `./build/` at `http://localhost:8080` and show the access log:
 llh --serveport 8080 -d ./build/ -l
 ```
 
-The first two non-dashed parameters are presumed to be the port and directory:
+The first two non-dashed parameters set the port and directory:
 
 ```bash
 llh 8080 ./build/ -l
@@ -75,7 +75,7 @@ Stop the server with `Ctrl` | `Cmd` + `C`.
 
 ## Environment variable configuration
 
-The server can be configured with environment variables. Add `-E` or `--helpenv` for help. Variables:
+You can configure the server with environment variables. Add `-E` or `--helpenv` for help. Variables:
 
 |env variable|description|
 |-|-|
@@ -86,7 +86,7 @@ The server can be configured with environment variables. Add `-E` or `--helpenv`
 | `WATCH_DEBOUNCE=<num>` | [debounce time](#watch-debouncing) for file changes (default `600`) |
 | `ACCESS_LOG=<true\|false>` | show server access log (`false`) |
 
-Variables can be defined in a file, e.g.
+You can define variables in a file, e.g.
 
 ```ini
 # example .env file
@@ -114,7 +114,7 @@ Install in your project:
 npm install livelocalhost --save-dev
 ```
 
-*(`--save-dev` ensures it's only available in development)*
+*(`--save-dev` ensures it's available in development but not production)*
 
 Import the module into any JavaScript file (such as `index.js`):
 
@@ -133,7 +133,7 @@ livelocalhost.watchDebounce = 2000;       // debounce time
 livelocalhost.accessLog     = true;       // show server logs
 ```
 
-*(If not set, options fall back to environment variables then defaults.)*
+(*When not set, options fall back to environment variables then defaults.*)
 
 Execute the `.start()` method to start the server:
 
@@ -151,17 +151,17 @@ Browser hot reloading is available when:
   1. the application has permission to watch OS files, and
   2. `--reloadservice` is a valid URL path starting `/`.
 
-The default Server Sent Events service path for hot reloading is `/livelocalhost.service`. A client-side script at `/livelocalhost.service.js` is injected into all HTML files which automatically refreshes the browser:
+The default Server Sent Events service path for hot reloading is `/livelocalhost.service`. The server injects a client-side script at `/livelocalhost.service.js` into all HTML files which automatically refreshes the browser:
 
 * CSS changes are hot reloaded without a full page refresh
 * HTML changes trigger a full page refresh
-* JavaScript changes trigger a full page refresh when `--hotloadJS` is enabled (off by default).
+* JavaScript changes trigger a full page refresh when you enable `--hotloadJS` (off by default).
 
-You need only change `--reloadservice` when the default path is in use or you want to disable hot reloading (set any value that does not start with `/`).
+You can change `--reloadservice` when its path is in use by another asset. Disable hot reloading by setting any value that does not start with `/`.
 
 
 ## Watch debouncing
 
-When a file is changed, LiveLocalhost waits 600ms. A hot reload is only triggered if no other files change within that time.
+When a file changes, LiveLocalhost waits 600ms. A hot reload triggers if no other files change within that time.
 
-You can change the delay time using `--watchDebounce`. Note that very low settings can make reloading slower.
+You can change the delay time using `--watchDebounce`. Note that low settings can make reloading slower.

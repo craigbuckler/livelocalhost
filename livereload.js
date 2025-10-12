@@ -3,10 +3,12 @@ new EventSource('_reloadSSE_').addEventListener('change', e => {
 
   const
     changed = JSON.parse(e.data),
+    path = location.pathname.slice(1),
     d = +new Date();
 
   if (
-    changed.includes( location.pathname.slice(1) + 'index.html' ) ||
+    changed.includes( path ) ||
+    changed.includes( path + 'index.html' ) ||
     (_hotloadJS_ && changed.some(c => c.endsWith('.js')))
   ) {
 
