@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.4, 20 October 2025](#124-20-october-2025)
+
+* fixed Windows live reload issue
+
 ## [1.2.3, 12 October 2025](#123-12-october-2025)
 
 * live reload now works on any HTML file as well as `index.html`

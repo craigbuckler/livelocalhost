@@ -222,7 +222,7 @@ class LiveLocalhost {
 
     // watch for file changes
     watch(this.#serverDir, { recursive: true }, (event, file) => {
-      changed.add(file);
+      changed.add(file.replaceAll(sep, '/'));
       wait();
     });
 
